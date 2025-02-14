@@ -3,5 +3,8 @@
         "psr-4": {
             "Http\\": "source/http"
         }
+    },
+    "require-dev": {
+        "php-cs-fixer/shim": "^3.68"
     }
 }
