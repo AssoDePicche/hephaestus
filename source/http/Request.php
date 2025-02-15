@@ -10,7 +10,7 @@ namespace Http {
             return $_SERVER["REQUEST_METHOD"];
         }
 
-        public function getRequestURI(): string
+        public function getURI(): string
         {
             return $_SERVER["REQUEST_URI"];
         }
