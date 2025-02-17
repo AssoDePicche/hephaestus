@@ -29,16 +29,18 @@ namespace Http {
 
             http_response_code($this->statusCode->value);
 
-            $data = [];
+            $response = [];
 
-            $data["message"] = $this->statusCode->getName();
+            $response["message"] = $this->statusCode->getName();
 
             $now = new \DateTimeImmutable();
 
-            $data["timestamp"] = $now->format(\DateTimeImmutable::RFC850);
+            $response["timestamp"] = $now->format(\DateTimeImmutable::RFC850);
 
-            $data["payload"] = $this->payload;
+            if (!empty($this->payload)) {
+                $response["payload"] = $this->payload;
+            }
 
-            echo json_encode($data) . PHP_EOL;
+            echo json_encode($response) . PHP_EOL;
         }
     }}
