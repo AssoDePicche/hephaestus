@@ -11,3 +11,9 @@ require_once '../vendor/autoload.php';
 $dotenv = \Dotenv\Dotenv::createUnsafeImmutable('../');
 
 $dotenv->load();
+
+$router = new \Http\Router('../resources/routes.json');
+
+$response = $router->dispatch(new \Http\Request());
+
+$response->send();
