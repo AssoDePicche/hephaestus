@@ -10,6 +10,16 @@ final class Response
     {
     }
 
+    public static function from(\Exception $exception): self
+    {
+        return new self([
+          "exception" => [
+            "code" => $exception->getCode(),
+            "message" => $exception->getMessage()
+          ]
+        ], StatusCode::INTERNAL_SERVER_ERROR);
+    }
+
     public function send(): void
     {
         if (isset($_SERVER["HTTP_ORIGIN"])) {
