@@ -2,49 +2,49 @@
 
 declare(strict_types=1);
 
-namespace Http {
-    final class Request
+namespace Http;
+
+final class Request
+{
+    public function getMethod(): string
     {
-        public function getMethod(): string
-        {
-            return $_SERVER["REQUEST_METHOD"];
-        }
+        return $_SERVER["REQUEST_METHOD"];
+    }
 
-        public function getURI(): string
-        {
-            return $_SERVER["REQUEST_URI"];
-        }
+    public function getURI(): string
+    {
+        return $_SERVER["REQUEST_URI"];
+    }
 
-        public function getQueryString(): array
-        {
-            return $_GET;
-        }
+    public function getQueryString(): array
+    {
+        return $_GET;
+    }
 
-        public function getParts(): array
-        {
-            return $_FILES;
-        }
+    public function getParts(): array
+    {
+        return $_FILES;
+    }
 
-        public function getCookies(): array
-        {
-            return $_COOKIE;
-        }
+    public function getCookies(): array
+    {
+        return $_COOKIE;
+    }
 
-        public function getSession(): array
-        {
-            session_start();
+    public function getSession(): array
+    {
+        session_start();
 
-            return $_SESSION;
-        }
+        return $_SESSION;
+    }
 
-        public function getBody(): array
-        {
-            return json_decode(file_get_contents("php://input", true), true);
-        }
+    public function getBody(): array
+    {
+        return json_decode(file_get_contents("php://input", true), true);
+    }
 
-        public function getHeaders(): array
-        {
-            return getallheaders();
-        }
+    public function getHeaders(): array
+    {
+        return getallheaders();
     }
 }
