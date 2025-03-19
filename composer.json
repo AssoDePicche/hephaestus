@@ -2,6 +2,7 @@
     "autoload": {
         "psr-4": {
             "Controller\\": "source/controller",
+            "Domain\\": "source/domain",
             "Http\\": "source/http",
             "Persistence\\": "source/persistence"
         }
