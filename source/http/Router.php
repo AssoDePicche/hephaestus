@@ -40,7 +40,11 @@ final class Router
 
                 $controller = new $class();
 
-                return call_user_func([$controller, $callback], $request);
+                try {
+                    return call_user_func([$controller, $callback], $request);
+                } catch (\Exception $exception) {
+                    return Response::from($exception);
+                }
             }
 
             return new Response([], StatusCode::METHOD_NOT_ALLOWED);
