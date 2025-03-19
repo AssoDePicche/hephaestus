@@ -30,4 +30,12 @@ enum StatusCode: int
             self::UNSUPPORTED_MEDIA_TYPE => "Unsupported Media Type",
         };
     }
+
+    public static function fromException(\Exception $exception): self
+    {
+        return match(true) {
+            $exception instanceof \DomainException => self::BAD_REQUEST,
+            default => self::INTERNAL_SERVER_ERROR,
+        };
+    }
 }
