@@ -6,18 +6,13 @@ namespace Http;
 
 final class Response
 {
-    public function __construct(private array $payload, private StatusCode $statusCode)
+    public function __construct(private array $payload, private StatusCode $statusCode, private ?\Exception $exception = null)
     {
     }
 
     public static function from(\Exception $exception): self
     {
-        return new self([
-          "exception" => [
-            "code" => $exception->getCode(),
-            "message" => $exception->getMessage()
-          ]
-        ], StatusCode::INTERNAL_SERVER_ERROR);
+        return new self([], StatusCode::fromException($exception), $exception);
     }
 
     public function send(): void
@@ -50,6 +45,10 @@ final class Response
 
         if (!empty($this->payload)) {
             $response["payload"] = $this->payload;
+        }
+
+        if (!is_null($this->exception)) {
+            $response["error"] = $this->exception->getMessage();
         }
 
         echo json_encode($response) . PHP_EOL;
