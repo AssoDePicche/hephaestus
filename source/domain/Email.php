@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Domain;
 
-final readonly class Email
+final readonly class Email implements \Stringable
 {
     private function __construct(private string $value)
     {
