@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Domain;
 
-final readonly class UUID
+final readonly class UUID implements \Stringable
 {
     private function __construct(
         private string $value
