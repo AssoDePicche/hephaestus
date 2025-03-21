@@ -27,7 +27,7 @@ final class Connection
         ]);
     }
 
-    public static function getInstance(): self
+    public static function new(): self
     {
         if (null === self::$instance) {
             self::$instance = new self(
@@ -62,5 +62,10 @@ final class Connection
         }
 
         return $rows;
+    }
+
+    public function rowCount(): int
+    {
+        return $this->statement->rowCount();
     }
 }
