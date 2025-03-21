@@ -8,43 +8,41 @@ final class Request
 {
     public function getMethod(): string
     {
-        return $_SERVER["REQUEST_METHOD"];
+        return $_SERVER["REQUEST_METHOD"] ?? "";
     }
 
     public function getURI(): string
     {
-        return $_SERVER["REQUEST_URI"];
+        return $_SERVER["REQUEST_URI"] ?? "";
     }
 
     public function getQueryString(): array
     {
-        return $_GET;
+        return $_GET ?? [];
     }
 
     public function getParts(): array
     {
-        return $_FILES;
+        return $_FILES ?? [];
     }
 
     public function getCookies(): array
     {
-        return $_COOKIE;
+        return $_COOKIE ?? [];
     }
 
-    public function getSession(): array
+    public function getSession(bool $create = false): Session
     {
-        session_start();
-
-        return $_SESSION;
+        return Session::new($create);
     }
 
     public function getBody(): array
     {
-        return json_decode(file_get_contents("php://input", true), true);
+        return json_decode(file_get_contents("php://input", true), true) ?? [];
     }
 
     public function getHeaders(): array
     {
-        return getallheaders();
+        return getallheaders() ?? [];
     }
 }
