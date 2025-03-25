@@ -17,21 +17,15 @@ final class Response
 
     public function send(): void
     {
-        if (isset($_SERVER["HTTP_ORIGIN"])) {
-            header("Access-Control-Allow-Origin: {$_SERVER['HTTP_ORIGIN']}");
+        header("Access-Control-Allow-Origin: *");
 
-            header("Access-Control-Allow-Credentials: true");
-        }
+        header("Access-Control-Allow-Credentials: true");
 
-        if (isset($_SERVER["HTTP_ACCESS_CONTROL_REQUEST_METHOD"])) {
-            header("Access-Control-Allow-Methods: GET, POST");
-        }
+        header("Access-Control-Allow-Methods: *");
 
-        if (isset($_SERVER["HTTP_ACCESS_CONTROL_REQUEST_HEADERS"])) {
-            header("Access-Control-Allow-Headers: {$_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']}");
-        }
+        header("Access-Control-Allow-Headers: *");
 
-        header("Content-Type: application/json");
+        header("Content-Type: application/json;charset=UTF-8");
 
         http_response_code($this->statusCode->value);
 
