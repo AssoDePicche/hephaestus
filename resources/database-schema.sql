@@ -34,3 +34,11 @@ CREATE TABLE IF NOT EXISTS Products (
   FOREIGN KEY (category) REFERENCES Categories (id),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE IF NOT EXISTS Warehouses (
+  id CHAR(36) PRIMARY KEY,
+  organization CHAR(36) NOT NULL,
+  name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (organization) REFERENCES Organizations (id)
+);
