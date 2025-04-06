@@ -42,3 +42,16 @@ CREATE TABLE IF NOT EXISTS Warehouses (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (organization) REFERENCES Organizations (id)
 );
+
+CREATE TABLE IF NOT EXISTS Stocks (
+  id CHAR(36) PRIMARY KEY,
+  warehouse CHAR(36) NOT NULL,
+  product CHAR(36) NOT NULL,
+  quantity INT NOT NULL,
+  minimum_quantity INT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (warehouse) REFERENCES Warehouses (id),
+  FOREIGN KEY (product) REFERENCES Products (id),
+  CHECK (quantity >= minimum_quantity AND minimum_quantity >= 0)
+);
