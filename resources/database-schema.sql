@@ -18,3 +18,11 @@ CREATE TABLE IF NOT EXISTS Permissions (
   name VARCHAR(255) UNIQUE NOT NULL,
   description VARCHAR(255) NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS Categories (
+  id CHAR(36) PRIMARY KEY,
+  organization CHAR(36) NOT NULL,
+  name VARCHAR(255) UNIQUE NOT NULL,
+  FOREIGN KEY (organization) REFERENCES Organizations (id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
