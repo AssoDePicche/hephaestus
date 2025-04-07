@@ -1,2 +1,8 @@
 {
+  "/signup": {
+    "POST": "AuthController@doSignup"
+  },
+  "/login": {
+    "POST": "AuthController@doLogin"
+  }
 }
