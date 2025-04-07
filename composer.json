@@ -4,6 +4,7 @@
             "Controller\\": "source/controller",
             "Domain\\": "source/domain",
             "Http\\": "source/http",
+            "Http\\Exception\\": "source/http/exception",
             "Persistence\\": "source/persistence"
         }
     },
