@@ -36,6 +36,9 @@ enum StatusCode: int
         return match(true) {
             $exception instanceof \DomainException => self::BAD_REQUEST,
             $exception instanceof \PDOException => self::BAD_REQUEST,
+            $exception instanceof \Http\Exception\BadRequestException => self::BAD_REQUEST,
+            $exception instanceof \Http\Exception\NotFoundException => self::NOT_FOUND,
+            $exception instanceof \Http\Exception\UnauthorizedException => self::UNAUTHORIZED,
             default => self::INTERNAL_SERVER_ERROR,
         };
     }
