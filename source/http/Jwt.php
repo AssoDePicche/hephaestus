@@ -4,23 +4,49 @@ declare(strict_types=1);
 
 namespace Http;
 
-final class Jwt
+final readonly class Jwt
 {
-    public static function encode(array $data): string
+    private function __construct(public array $data, public string $issuedAt)
     {
-        $key = $_ENV["AUTH_KEY"];
-
-        $algorithm = $_ENV["AUTH_ALGORITHM"];
-
-        return \Firebase\JWT\JWT::encode($data, $key, $algorithm);
     }
 
-    public static function decode(string $token): array
+    public static function new(array $data): self
+    {
+        $now = new \DateTimeImmutable();
+
+        $data["issuedAt"] = $now->format(\DateTimeImmutable::RFC850);
+
+        return new self($data, $data["issuedAt"]);
+    }
+
+    public static function from(string $token): self
     {
         $key = new \Firebase\JWT\Key($_ENV["AUTH_KEY"], $_ENV["AUTH_ALGORITHM"]);
 
         $headers = new \stdClass();
 
-        return (array)\Firebase\JWT\JWT::decode($token, $key, $headers);
+        $data = (array)\Firebase\JWT\JWT::decode($token, $key, $headers);
+
+        return new self($data, $data["issuedAt"]);
+    }
+
+    public function isExpired(): bool
+    {
+        $now = new \DateTimeImmutable();
+
+        $duration = \DateInterval::createFromDateString($_ENV["AUTH_DURATION"]);
+
+        $issuedAt = \DateTimeImmutable::createFromFormat(\DateTimeImmutable::RFC850, $this->issuedAt);
+
+        return ($now <=> $issuedAt->add($duration)) === 1;
+    }
+
+    public function __toString(): string
+    {
+        $key = $_ENV["AUTH_KEY"];
+
+        $algorithm = $_ENV["AUTH_ALGORITHM"];
+
+        return \Firebase\JWT\JWT::encode($this->data, $key, $algorithm);
     }
 }
