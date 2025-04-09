@@ -20,36 +20,38 @@ final class Router
     {
         $allowed_http_methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
 
-        foreach ($this->routes as $route => $args) {
-            if ($request->getURI() !== $route) {
-                continue;
+
+        try {
+            if (!key_exists($request->getURI(), $this->routes)) {
+                $message = sprintf("Route '%s' not found", $request->getURI());
+
+                throw \Http\Exception\NotFoundException::new($message);
             }
 
-            foreach ($allowed_http_methods as $http_method) {
-                if ($request->getMethod() !== $http_method) {
-                    continue;
-                }
+            $http_method = $request->getMethod();
 
-                $class = "\\Controller\\" . explode("@", $args[$http_method])[0];
+            $route = $this->routes[$request->getURI()];
 
-                $callback = explode("@", $args[$http_method])[1];
+            if (!key_exists($http_method, $route)) {
+                $message = sprintf("Method '%s' not allowed for route '%s'", $http_method, $request->getURI());
 
-                if (!class_exists($class) || !method_exists($class, $callback)) {
-                    return new Response([], StatusCode::INTERNAL_SERVER_ERROR);
-                }
-
-                $controller = new $class();
-
-                try {
-                    return call_user_func([$controller, $callback], $request);
-                } catch (\Exception $exception) {
-                    return Response::from($exception);
-                }
+                throw \Http\Exception\MethodNotAllowedException::new($message);
             }
 
-            return new Response([], StatusCode::METHOD_NOT_ALLOWED);
+            $class = "\\Controller\\" . explode("@", $route[$http_method])[0];
+
+            $callback = explode("@", $route[$http_method])[1];
+
+            if (!class_exists($class) || !method_exists($class, $callback)) {
+                throw \Http\Exception\InternalServerErrorException::new("Request cannot be resolved");
+            }
+
+            $controller = new $class();
+
+            return call_user_func([$controller, $callback], $request);
+        } catch (\Exception $exception) {
+            return Response::from($exception);
         }
 
-        return new Response([], StatusCode::NOT_FOUND);
     }
 }
