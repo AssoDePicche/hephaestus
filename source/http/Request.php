@@ -13,7 +13,7 @@ final class Request
 
     public function getURI(): string
     {
-        return $_SERVER["REQUEST_URI"] ?? "";
+        return rtrim(explode("?", $_SERVER["REQUEST_URI"] ?? "")[0], "/");
     }
 
     public function getQueryString(): array
