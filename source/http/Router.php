@@ -6,41 +6,19 @@ namespace Http;
 
 final class Router
 {
-    private array $routes = [];
-
-    public function __construct(
-        private string $filename
+    private function __construct(
+        private array $routes = []
     ) {
-        $json = file_get_contents($this->filename);
-
-        $this->routes = json_decode($json, true);
     }
 
     public function dispatch(Request $request): Response
     {
-        $allowed_http_methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'];
-
-
         try {
-            if (!key_exists($request->getURI(), $this->routes)) {
-                $message = sprintf("Route '%s' not found", $request->getURI());
+            $route = $this->getRoute($request);
 
-                throw \Http\Exception\NotFoundException::new($message);
-            }
+            $class = "\\Controller\\" . explode("@", $route["callback"])[0];
 
-            $http_method = $request->getMethod();
-
-            $route = $this->routes[$request->getURI()];
-
-            if (!key_exists($http_method, $route)) {
-                $message = sprintf("Method '%s' not allowed for route '%s'", $http_method, $request->getURI());
-
-                throw \Http\Exception\MethodNotAllowedException::new($message);
-            }
-
-            $class = "\\Controller\\" . explode("@", $route[$http_method])[0];
-
-            $callback = explode("@", $route[$http_method])[1];
+            $callback = explode("@", $route["callback"])[1];
 
             if (!class_exists($class) || !method_exists($class, $callback)) {
                 throw \Http\Exception\InternalServerErrorException::new("Request cannot be resolved");
@@ -52,6 +30,75 @@ final class Router
         } catch (\Exception $exception) {
             return Response::from($exception);
         }
+    }
 
+    private function getRoute(Request $request): array
+    {
+        $http_method = $request->getMethod();
+
+        foreach ($this->routes as $allowed_http_method => $routes) {
+            foreach ($routes as $route) {
+                $pattern = array_keys($route)[0];
+
+                if (!preg_match($pattern, $request->getURI(), $matches)) {
+                    continue;
+                }
+
+                if ($allowed_http_method !== $request->getMethod()) {
+                    $message = sprintf("'%s' method not allowed for '%s' route", $request->getMethod(), $request->getURI());
+
+                    throw \Http\Exception\MethodNotAllowedException::new($message);
+                }
+
+                unset($matches[0]);
+
+                $route[$pattern]["variables"] = array_combine($route[$pattern]["variables"], $matches);
+
+                return $route[$pattern];
+            }
+        }
+
+        $message = sprintf("Route '%s' not found", $request->getURI());
+
+        throw \Http\Exception\NotFoundException::new($message);
+    }
+
+    public static function from(string $filename): self
+    {
+        $json = json_decode(file_get_contents($filename), true);
+
+        $routes = [
+          "GET" => [],
+          "POST" => [],
+          "PUT" => [],
+          "PATCH" => [],
+          "DELETE" => [],
+        ];
+
+        foreach (array_keys($json) as $route) {
+            foreach (array_keys($json[$route]) as $http_method) {
+                $pattern = "/{(.*?)}/";
+
+                $replacement = "(.*?)";
+
+                $index = $route;
+
+                if (preg_match_all($pattern, $route, $matches)) {
+                    $index = preg_replace($pattern, $replacement, $route);
+                }
+
+                $index = "/^" .  str_replace("/", "\/", rtrim($index, "/")) . "$/";
+
+                $routes[$http_method][] = [
+                  $index => [
+                    "callback" => $json[$route][$http_method]["callback"],
+                    "middlewares" => $json[$route][$http_method]["middlewares"] ?? [],
+                    "variables" => $matches[1] ?? [],
+                  ]
+                ];
+            }
+        }
+
+        return new self($routes);
     }
 }
