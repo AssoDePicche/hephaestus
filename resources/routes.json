@@ -1,8 +1,14 @@
 {
   "/signup": {
-    "POST": "AuthController@doSignup"
+    "POST": {
+      "middlewares": [],
+      "callback": "AuthController@doSignup"
+    }
   },
   "/login": {
-    "POST": "AuthController@doLogin"
+    "POST": {
+      "middlewares": [],
+      "callback": "AuthController@doLogin"
+    }
   }
 }
