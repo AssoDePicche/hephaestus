@@ -5,6 +5,7 @@
             "Domain\\": "source/domain",
             "Http\\": "source/http",
             "Http\\Exception\\": "source/http/exception",
+            "Infrastructure\\": "source/infrastructure",
             "Persistence\\": "source/persistence"
         }
     },
