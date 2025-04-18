@@ -36,14 +36,20 @@ final class AuthController extends Controller
 
         $connection = \Persistence\Connection::new();
 
-        $hash = $connection->execute($query, [
+        $resultSet = $connection->execute($query, [
           \Domain\Email::from($body["email"])->__toString(),
-        ])->fetch()[0]["password"];
+        ])->fetch();
+
+        if (empty($resultSet)) {
+            throw \Http\Exception\NotFoundException::new("The email address you entered is not associated with any account");
+        }
+
+        $hash = $resultSet[0]["password"];
 
         $password = \Domain\Password::from($hash);
 
         if (!$password->compare($body["password"])) {
-            throw \Http\Exception\UnauthorizedException::new();
+            throw \Http\Exception\UnauthorizedException::new("Incorrect password");
         }
 
         $token = \Http\Jwt::new(["email" => $body["email"]])->__toString();
