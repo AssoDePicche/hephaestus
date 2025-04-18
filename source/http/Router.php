@@ -45,7 +45,9 @@ final class Router
                 }
 
                 if ($allowed_http_method !== $request->getMethod()) {
-                    $message = sprintf("'%s' method not allowed for '%s' route", $request->getMethod(), $request->getURI());
+                    $uri = $request->getURI() === '' ? '/' : $request->getURI();
+
+                    $message = sprintf("'%s' method not allowed for '%s' route", $request->getMethod(), $uri);
 
                     throw \Http\Exception\MethodNotAllowedException::new($message);
                 }
