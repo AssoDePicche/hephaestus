@@ -17,19 +17,27 @@ final class Response
 
     public function send(): void
     {
-        header("Access-Control-Allow-Origin: *");
+        header(sprintf("Access-Control-Allow-Origin: %s", $_ENV["ALLOWED_ORIGIN"]));
 
         header("Access-Control-Allow-Credentials: true");
 
-        header("Access-Control-Allow-Methods: *");
+        header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
 
-        header("Access-Control-Allow-Headers: *");
+        header("Access-Control-Allow-Headers: Accept, Accept-Language, Authorization, Content-Type");
+
+        if ("OPTIONS" === $_SERVER["REQUEST_METHOD"]) {
+            http_response_code(200);
+
+            exit();
+        };
 
         header("Content-Type: application/json;charset=UTF-8");
 
         http_response_code($this->statusCode->value);
 
         $response = [];
+
+        $response["status"] = $this->statusCode->value;
 
         $response["message"] = $this->statusCode->getName();
 
