@@ -65,6 +65,10 @@ final class Router
 
     public static function from(string $filename): self
     {
+        if (!file_exists($filename)) {
+            throw new \RuntimeException(sprintf("'%s' not found", $filename));
+        }
+
         $json = json_decode(file_get_contents($filename), true);
 
         $routes = [
