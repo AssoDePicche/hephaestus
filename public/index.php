@@ -12,7 +12,7 @@ $dotenv = \Dotenv\Dotenv::createUnsafeImmutable('../');
 
 $dotenv->load();
 
-$router = new \Http\Router('../resources/routes.json');
+$router = \Http\Router::from('../resources/routes.json');
 
 $response = $router->dispatch(new \Http\Request());
 
